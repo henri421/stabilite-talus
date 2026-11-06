@@ -320,6 +320,18 @@ function nombreDuTalusType(type: string): number | null {
   return lireNombre(exige<HTMLInputElement>(`[data-type="${type}"]`).value);
 }
 
+/** Nombre ecrit comme a la saisie : virgule decimale, sans zero inutile. */
+function nombreSaisi(v: number): string {
+  return String(Math.round(v * 1000) / 1000).replace('.', ',');
+}
+
+/** Point ajoute : 5 m apres le dernier, a la meme cote ; (0 ; 0) si la liste est vide ou illisible. */
+function pointSuivant(liste: { x: string; y: string }[]): { x: string; y: string } {
+  const der = liste[liste.length - 1];
+  const x = der === undefined ? null : lireNombre(der.x);
+  return x === null || der === undefined ? { x: '0', y: '0' } : { x: nombreSaisi(x + 5), y: der.y };
+}
+
 document.addEventListener('click', (evenement) => {
   const cible = evenement.target;
   if (!(cible instanceof HTMLElement)) return;
@@ -355,12 +367,12 @@ document.addEventListener('click', (evenement) => {
   if (action === undefined) return;
 
   if (action === 'ajouter-point') {
-    saisie.profil.push({ x: '', y: '' });
+    saisie.profil.push(pointSuivant(saisie.profil));
     dessinerListes();
     return recalculer();
   }
   if (action === 'ajouter-point-nappe') {
-    saisie.piezo.push({ x: '', y: '' });
+    saisie.piezo.push(pointSuivant(saisie.piezo));
     dessinerListes();
     return recalculer();
   }
@@ -390,7 +402,14 @@ document.addEventListener('click', (evenement) => {
     return recalculer();
   }
   if (action === 'ajouter-couche') {
-    saisie.couches.push({ nom: '', drainage: 'draine', base: '', gamma: '', gammaSat: '', phi: '', c: '', cu: '' });
+    // Une nouvelle couche reprend la derniere, 10 m plus bas : la saisie reste calculable.
+    const der = saisie.couches[saisie.couches.length - 1];
+    const base = der === undefined ? null : lireNombre(der.base);
+    saisie.couches.push(
+      der === undefined || base === null
+        ? { nom: '', drainage: 'draine', base: '-20', gamma: '19', gammaSat: '20', phi: '30', c: '0', cu: '' }
+        : { ...der, nom: '', base: nombreSaisi(base - 10) }
+    );
     dessinerListes();
     return recalculer();
   }
@@ -401,7 +420,9 @@ document.addEventListener('click', (evenement) => {
     return recalculer();
   }
   if (action === 'ajouter-bande') {
-    saisie.bandes.push({ x0: '', x1: '', q: '', nature: 'Q' });
+    // Une bande de 5 m au debut du profil, 10 kPa variable : a ajuster.
+    const x0 = lireNombre(saisie.profil[0]?.x ?? '') ?? 0;
+    saisie.bandes.push({ x0: nombreSaisi(x0 + 1), x1: nombreSaisi(x0 + 6), q: '10', nature: 'Q' });
     dessinerListes();
     return recalculer();
   }

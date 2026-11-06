@@ -121,7 +121,7 @@ function coefficientsHtml(r: Resultat): string {
     .join('');
   const c = t.colonnes;
   return (
-    `<details class="deriv" open><summary>${t.volets.coefficients}</summary><div class="defile"><table><thead><tr>` +
+    `<details class="deriv"><summary>${t.volets.coefficients}</summary><div class="defile"><table><thead><tr>` +
     `<th>${c.combinaison}</th><th>${c.groupe}</th><th>${c.coefficient}</th><th class="n">${c.valeur}</th><th>${c.source}</th>` +
     `</tr></thead><tbody>${lignes}</tbody></table></div></details>`
   );
@@ -157,7 +157,7 @@ export function tranchesHtml(r: Resultat, vue: string): string {
     .join('');
   const c = t.colonnes;
   return (
-    `<details class="deriv" open><summary>${t.titre(nom, res.tranches.length)}</summary><div class="defile"><table><thead><tr>` +
+    `<details class="deriv"><summary>${t.titre(nom, res.tranches.length)}</summary><div class="defile"><table><thead><tr>` +
     `<th class="n">${c.x}</th><th class="n">${c.b}</th><th class="n">${c.W}</th><th class="n">${c.G}</th>` +
     `<th class="n">${c.Q}</th><th class="n">${c.u}</th><th class="n">${c.alpha}</th><th>${c.materiau}</th>` +
     `<th class="n">${c.mAlpha}</th></tr></thead><tbody>${lignes}</tbody></table></div></details>`

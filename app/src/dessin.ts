@@ -172,11 +172,15 @@ export function coupe(calcul: Calcul, r: Resultat, vue: string, options: { cotes
 
   // Cadre : tout ce qui est dessine, centre du cercle compris. Il ne depend pas des options.
   const xs = [...profil.map((p) => p.x), cercle.xc, xa, xb, ...d.bandes.flatMap((b) => [b.x0, b.x1]), ...piezo.map((p) => p.x)];
-  const ys = [...profil.map((p) => p.y), cercle.yc, ...tranches.map((t) => t.yBase), ...bases, ...piezo.map((p) => p.y)];
-  if (rechercheAvecLimite && d.coteLimite !== undefined) ys.push(d.coteLimite);
+  // En bas, le cadre s'arrete un peu sous le plus bas du terrain, de l'arc et de la cote limite :
+  // une couche profonde n'agrandit pas le dessin, elle est coupee au bord.
+  const bas = [...profil.map((p) => p.y), ...tranches.map((t) => t.yBase)];
+  if (rechercheAvecLimite && d.coteLimite !== undefined) bas.push(d.coteLimite);
+  const yBas = Math.min(...bas);
+  const ys = [...profil.map((p) => p.y), cercle.yc, yBas, ...bases.filter((b) => b > yBas), ...piezo.map((p) => p.y)];
   const xmin = Math.min(...xs);
   const xmax = Math.max(...xs);
-  const ymin = Math.min(...ys);
+  const ymin = Math.min(...ys) - 0.08 * (Math.max(...ys) - Math.min(...ys));
   const ymax = Math.max(...ys);
   const spanX = xmax - xmin || 1;
   const spanY = ymax - ymin || 1;
@@ -194,17 +198,17 @@ export function coupe(calcul: Calcul, r: Resultat, vue: string, options: { cotes
   const niveaux = abscissesCouches(profil, bases);
   d.couches.forEach((c, k) => {
     const haut = k === 0 ? Infinity : bases[k - 1];
-    const dessus = niveaux.map((x) => [X(x), Y(Math.max(c.base, Math.min(ySur(profil, x), haut)))]);
-    const dessous = niveaux.map((x) => [X(x), Y(c.base)]).reverse();
+    const dessus = niveaux.map((x) => [X(x), Y(Math.max(c.base, ymin, Math.min(ySur(profil, x), haut)))]);
+    const dessous = niveaux.map((x) => [X(x), Y(Math.max(c.base, ymin))]).reverse();
     const points = [...dessus, ...dessous].map(([px, py]) => `${a(px)},${a(py)}`).join(' ');
     const classe = c.drainage === 'draine' ? 'couche-draine' : 'couche-non-draine';
     corps.push(`<polygon class="couche ${classe}" points="${points}"/>`);
   });
-  d.couches.slice(0, -1).forEach((c) => {
+  d.couches.slice(0, -1).filter((c) => c.base > ymin).forEach((c) => {
     corps.push(ligne(X(xp0), Y(c.base), X(xpN), Y(c.base), 'limite-couche'));
   });
   d.couches.forEach((c) => {
-    corps.push(texte(X(xp0) + 6, Y(c.base) - 5, 'texte-coupe', L.couche(c)));
+    corps.push(texte(X(xp0) + 6, Y(Math.max(c.base, ymin)) - 5, 'texte-coupe', L.couche(c)));
   });
 
   // Terrain, puis ligne piezometrique.

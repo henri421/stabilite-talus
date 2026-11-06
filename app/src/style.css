@@ -676,3 +676,8 @@ svg .texte-coupe { fill: var(--texte-doux); font-size: 11px; font-family: var(--
 svg .texte-eau { fill: var(--eau); font-size: 11px; font-family: var(--sans); }
 svg .texte-refus { fill: var(--refus); font-size: 11px; font-family: var(--sans); }
 svg .titre-coupe { fill: var(--refus); font-size: 12px; font-weight: 600; font-family: var(--sans); }
+
+/* --- Jauges : le balisage commun ecrit <i>, pas <div> ------------------- */
+.jauge > i { display: block; height: 100%; background: var(--ok); }
+.verdict.depasse .jauge > i { background: var(--refus); }
+.verdict p { font-size: 0.9rem; margin: 0.25rem 0; }
