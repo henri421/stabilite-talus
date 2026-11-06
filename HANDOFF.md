@@ -105,3 +105,38 @@ Hors périmètre : T4 (`stabilite-talus/src/talus.ts`), non traité. Aucune norm
 - Corrigé dans sol-ec7 (ede4c3a) : sources de R2 et R3 du profil ANB (l'ANB ne donne que R1, valeurs recommandées marquées « absent de l'ANB ») ; effort normal effectif borné à 0 ; commentaire du mode « effets » justifié par la norme et non par le test.
 - Point douteux 1 (γG,dst sur toutes les tranches en mode effets) : conforme au plan, le facteur porte sur l'effet net d'une action de source unique.
 - Choix gardé : en 2e génération, approche, profil et risque sont ignorés ; le risque n'agit qu'avec l'ANB. L'interface masquera ces champs.
+
+## T1 interface : page, saisie et câblage (`app/`)
+
+**Statut** : fait, tests d'acceptation de T1 verts. Commit « T1: page, saisie et cablage ».
+
+**Fichiers modifiés**
+- `app/src/form.ts` : `saisieParDefaut`, `lireSaisie`, `verifier` (noyau + coefficients de `sol-ec7`), `talusType`, `nappeHorizontale`, `serialiser`, `relire`, format `stabilite-talus/1`.
+- `app/index.html` : page complète (saisie, cercle, génération, dessin, exports), titre « Stabilité de talus », hors périmètre annoncé, lien `en/`.
+- `app/src/main.ts` : câblage comme le gabarit (clés `stabilite-talus/saisie` et `stabilite-talus:cartouche`), listes rendues dynamiquement, boutons de vue, options cotes et tranches, exports. Aucun calcul.
+- `HANDOFF.md` : cette section.
+
+**Décisions**
+- Messages de refus en français, écrits dans `form.ts` (et non dans `textes.ts`, squelette de T2/T5). Format : « Contexte : nombre attendu, reçu « … » ». Une bande est nommée « surcharge en bande k » : le test exige la minuscule « bande k ».
+- Cote limite illisible en recherche : refusée (le plan ne le dit pas ; la cote vide reste « pas de limite »).
+- Ligne piézométrique : `piezo` est `null` quand la nappe est décochée ; la liste reste saisie.
+- Couches : chaque couche est un `<fieldset>` avec légende « Couche k » (pas de tableau). Le nom vide devient « Couche k » dans les messages et dans le noyau.
+- Comportement : en drainé, c_u est masqué ; en non drainé, φ’ et c’ sont masqués. Les valeurs masquées restent en mémoire, non lues.
+- ANB 2022 : la liste d'approche est désactivée et affiche DA1 ; la valeur saisie n'est pas écrasée.
+- Dessin : case « Tranches » décochée par défaut, « Cotes » cochée (comme le gabarit).
+- `data-vue` identifie les boutons de vue ; `data-type` les champs du talus type ; `data-role="cote-horizontale"` la cote de la nappe horizontale.
+- Le cartouche (projet, élément) est mémorisé à chaque saisie.
+- `main.ts` lit `textes().messages.rienAExporter` (squelette de `textes.ts`, à écrire en T2).
+
+**Points douteux**
+- Page non ouverte dans un navigateur : `main.ts` appelle `verdictsHtml` au démarrage, qui lève « a ecrire » tant que `vue.ts` (T2) est un squelette. La saisie est bien remplie, mais aucun résultat ne s'affiche avant T2 ; la console montre l'erreur.
+- Chaque frappe relance `verifier`, donc la recherche du cercle critique : pas de différé. À mesurer quand T2 est en place.
+- Classes CSS de la maquette absentes de `style.css` (`couche`, `points`, `volet`, `boutons-generation`) : la page utilise les classes du gabarit ; la mise en forme des couches reste à vérifier visuellement. Aucune règle CSS ajoutée.
+- `index.html` référence `icone.svg` et `icone-192.png`, à créer en T6.
+- Le banc (`lancer.mjs . …`) rattache les échecs de `dessin.test.ts` au libellé `form.test.ts` dans le récapitulatif de la suite complète ; `form.test.ts` seul fait 24/24.
+
+**Statut des tests**
+- `lancer.mjs . form.test` : `24 réussis, 0 échec` (fichier seul).
+- `lancer.mjs . page.test` : `12 réussis, 0 échec`.
+- `typecheck.mjs .` : `typecheck : 0 erreur (TypeScript 6.0.3)`.
+- Suite complète : `24 réussis, 32 échecs`. Les échecs sont les squelettes non écrits : `vue.ts` (T2, « a ecrire »), `dessin.ts` (T3), `note.ts` (T4), `en/` et `textes.ts` (T5). Aucun test de `form.test` ni de `page.test` n'échoue.
