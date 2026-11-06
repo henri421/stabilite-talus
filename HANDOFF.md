@@ -140,3 +140,30 @@ Hors périmètre : T4 (`stabilite-talus/src/talus.ts`), non traité. Aucune norm
 - `lancer.mjs . page.test` : `12 réussis, 0 échec`.
 - `typecheck.mjs .` : `typecheck : 0 erreur (TypeScript 6.0.3)`.
 - Suite complète : `24 réussis, 32 échecs`. Les échecs sont les squelettes non écrits : `vue.ts` (T2, « a ecrire »), `dessin.ts` (T3), `note.ts` (T4), `en/` et `textes.ts` (T5). Aucun test de `form.test` ni de `page.test` n'échoue.
+
+## T2 : verdicts, volets et textes (`app/src/vue.ts`, `app/src/textes.ts`)
+
+**Statut** : fait. Commit « T2: verdicts, volets et textes ».
+
+**Fichiers modifiés**
+- `app/src/vue.ts` : `verdictsHtml`, `voletsHtml`, `tranchesHtml`, `blocEntrees`, `blocsResultat`, `messageDErreur`. Signatures du squelette conservées.
+- `app/src/textes.ts` : `textes()`, `phrase`, `ponctuer`, type `Textes`. Français complet ; anglais complet en structure et en traduction courte (la relecture est T5).
+- `HANDOFF.md` : cette section.
+
+**Décisions**
+- `voletsHtml` rend les coefficients partiels (avec leur source) et les hypothèses. Les tranches ne sont pas dans les volets : `main.ts` les affiche dans leur propre zone (`tranchesHtml(r, vue)`).
+- Cartes de stabilité : une par combinaison, `data-verification` = nom, classe `depasse` seulement si taux > 1. Les alertes du noyau s'affichent sous les cartes sans marquer la carte.
+- Le groupe `indicatif` porte le F caractéristique sans jauge ni seuil.
+- Blocs d'entrée : symboles `profil`, `couche k`, `nappe`, `bande k`, `cercle` ou `cote limite`, puis `generation`, et selon la génération `approche` (et `risque`, `profil normatif`) en 1re, ou `classe` en 2e. La 2e génération n'affiche pas d'approche DA.
+- Tranches : W, G, Q en kN/m (unité du noyau), α converti en degrés. « non retenue » seulement si Q > 0 et la surcharge n'est pas retenue.
+- `phrase` : table exacte puis règle générique `sourceEn` (sources de coefficients, « action variable favorable »). En français, rien ne change.
+
+**Points douteux**
+- Les colonnes c′d, φ′d et force résistante de la maquette ne sont pas rendues : le noyau ne les porte pas dans `Tranche`.
+- Traduction anglaise : écrite, non relue ; `anglais.test` (T5) n'a pas été lancé.
+- Libellés de `blocsResultat` avec `F_d`, `γ_R;e` et `x_c` : la conversion en CSV est vérifiée par `vue.test` (CSV sans `_`).
+
+**Statut des tests**
+- `lancer.mjs . vue.test` : `71 réussis, 0 échec`.
+- `typecheck.mjs .` : `typecheck : 0 erreur (TypeScript 6.0.3)`.
+- Aucun fichier de `src/`, `tests/`, `dessin.ts`, `main.ts` ou `form.ts` modifié.
