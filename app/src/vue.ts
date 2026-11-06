@@ -212,7 +212,7 @@ export function blocEntrees(calcul: Calcul): BlocResultat {
     ligne('cote limite', t.coteLimite, d.coteLimite === undefined ? t.aucune : `${aff(d.coteLimite, 2)} m`);
   }
 
-  ligne('generation', t.generation, t.generations[d.generation]);
+  ligne(t.symboleGeneration, t.generation, t.generations[d.generation]);
   if (d.generation === '1re') {
     const anb = d.profilNormatif === 'anb2022';
     ligne('approche', t.approche, anb ? `${d.approche}, ${t.approcheImposee}` : d.approche);
