@@ -650,3 +650,29 @@ tr.gouverne td {
   background: var(--accent-doux);
   font-weight: 600;
 }
+
+/* --- Coupe du talus (T3) ---------------------------------------------- */
+
+:root {
+  --eau: #3a7ca5;   /* ligne piezometrique : le seul bleu de la coupe */
+}
+
+svg .ligne-terrain { fill: none; stroke: var(--texte); stroke-width: 1.6; stroke-linejoin: round; }
+svg .piezo { fill: none; stroke: var(--eau); stroke-width: 1.4; stroke-dasharray: 7 4; }
+svg .couche { stroke: none; }
+svg .couche-draine { fill: #ede6d6; }
+svg .couche-non-draine { fill: #e3e0da; }
+svg .limite-couche { stroke: var(--neutre); stroke-width: 1; stroke-dasharray: 4 3; }
+svg .masse { fill: var(--refus); fill-opacity: 0.07; stroke: none; }
+svg .cercle { fill: none; stroke: var(--refus); stroke-width: 2; }
+svg .centre { fill: var(--refus); stroke: none; }
+svg .rayon { stroke: var(--refus); stroke-width: 0.8; stroke-dasharray: 3 3; }
+svg .tranche { stroke: var(--refus); stroke-opacity: 0.45; stroke-width: 0.8; }
+svg .bande { fill: var(--beton); stroke: var(--texte-doux); stroke-width: 1; }
+svg .bande.variable { fill: var(--traction); fill-opacity: 0.14; stroke: var(--traction); stroke-dasharray: 5 3; }
+svg .cote-limite { stroke: var(--refus); stroke-width: 1; stroke-dasharray: 6 3; }
+svg text.cote { stroke: none; }
+svg .texte-coupe { fill: var(--texte-doux); font-size: 11px; font-family: var(--sans); }
+svg .texte-eau { fill: var(--eau); font-size: 11px; font-family: var(--sans); }
+svg .texte-refus { fill: var(--refus); font-size: 11px; font-family: var(--sans); }
+svg .titre-coupe { fill: var(--refus); font-size: 12px; font-weight: 600; font-family: var(--sans); }
