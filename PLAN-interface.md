@@ -67,13 +67,13 @@ volets 235 à 252, verdicts 255 à 260.
 | Tâche | Fichiers | Gabarit à lire | Filtre de test | Dépend de | Qui |
 | --- | --- | --- | --- | --- | --- |
 | T0 | `tests/app/*`, `vite.config.ts`, squelettes | | | | fait |
-| T1 | `app/index.html`, `form.ts`, `main.ts` | `fondations-superficielles/app/index.html`, `form.ts`, `main.ts` | `form.test`, `page.test` | T0 | exécutant |
-| T2 | `vue.ts`, `textes.ts` | `fondations-superficielles/app/src/vue.ts`, `textes.ts` | `vue.test` | T1 | exécutant |
-| T3 | `dessin.ts` | la maquette | `dessin.test` | T1 | exécutant, contrôle visuel par Claude |
-| T4 | `note.ts`, `export.ts` | `fondations-superficielles/app/src/note.ts`, `export.ts` | `note.test` | T2, T3 | exécutant |
-| T5 | `app/en/index.html`, `textes.ts` | `fondations-superficielles/app/en/index.html` | `anglais.test` | T4 | exécutant |
-| T6 | icônes, README, lock, publication | | | T5 | Claude |
-| T7 | carte et menu du hub ; renvoi de Fondbis | | | T6 | Claude |
+| T1 | `app/index.html`, `form.ts`, `main.ts` | `fondations-superficielles/app/index.html`, `form.ts`, `main.ts` | `form.test`, `page.test` | T0 | fait (7e5539e) |
+| T2 | `vue.ts`, `textes.ts` | `fondations-superficielles/app/src/vue.ts`, `textes.ts` | `vue.test` | T1 | fait (5ccec80) |
+| T3 | `dessin.ts` | la maquette | `dessin.test` | T1 | fait (0416863), contrôle visuel fait |
+| T4 | `note.ts`, `export.ts` | `fondations-superficielles/app/src/note.ts`, `export.ts` | `note.test` | T2, T3 | fait (530768a) |
+| T5 | `app/en/index.html`, `textes.ts` | `fondations-superficielles/app/en/index.html` | `anglais.test` | T4 | fait (83ee86a) |
+| T6 | icônes, README, lock, publication | | | T5 | local fait (ba03162) ; lock et publication en attente du dépôt |
+| T7 | carte et menu du hub ; renvoi de Fondbis | | | T6 | carte locale (hub d0a6711), non poussée ; renvoi de Fondbis à faire |
 
 `app/src/style.css` et `pwa.ts` sont déjà copiés des fondations : n'ajouter à la fin de `style.css` que les règles
 manquantes (la classe `.terrain` y remplit une surface : le profil dessiné s'appelle donc `ligne-terrain`). `page.test`

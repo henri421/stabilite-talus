@@ -227,3 +227,15 @@ Hors périmètre : T4 (`stabilite-talus/src/talus.ts`), non traité. Aucune norm
 - `lancer.mjs . anglais.test` : 24 réussis, 0 échec.
 - `lancer.mjs .` (suite complète) : 222 réussis, 0 échec.
 - `typecheck.mjs .` : 0 erreur (TypeScript 6.0.3).
+
+## Audit de l'interface (Claude, 2026-11-07)
+
+- Suite complète relancée : 222 réussis, 0 échec ; typage 0 erreur ; `tests/`, `src/` et `vite.config.ts` inchangés depuis T0 (afc09b1).
+- Contrôle visuel (prévisualisation `talus-banc`, port 5198), FR et EN : saisie, verdicts, coupe, volets, boutons de vue, cercle imposé, profil ANB (approche grisée, risque affiché), 2e génération, ajout de lignes.
+- Corrigé à l'audit (75e9a5c, a5a0c6e) :
+  - jauges vides : le balisage écrit `<i>`, la feuille attendait `> div` (même défaut corrigé dans `fondations-superficielles`, b9e67fd ; il reste dans `mur-en-l`) ;
+  - coupe recadrée sous le cercle et la cote limite : la base de la couche profonde (−40 m) ne fixe plus la hauteur du dessin ;
+  - volets « coefficients » et « tranches » repliés par défaut ;
+  - lignes ajoutées (point, couche, bande) pré-remplies : un ajout n'affiche plus d'erreur ;
+  - symbole « génération » accentué.
+- Restent : noms des couches par défaut (Limon, Argile) en français sur la page anglaise ; recalcul à chaque frappe sans différé (environ 0,15 s, acceptable) ; traduction anglaise non relue par un anglophone.
