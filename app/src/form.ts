@@ -10,6 +10,7 @@ import { lireNombre } from 'aedificium-ui';
 import { combinaisonsStabilite1g, combinaisonsStabilite2g, profil1g, profil2g, profilAnb2022 } from 'sol-ec7';
 import type { Approche, ClasseConsequences, CombinaisonStabilite, Risque } from 'sol-ec7';
 import { verifierTalus, type DonneesTalus, type ResultatTalus } from '../../src/talus';
+import { textes } from './textes';
 
 export type Generation = '1re' | '2e';
 
@@ -110,44 +111,48 @@ class Refus extends Error {}
 /** Lit un nombre, ou refuse en nommant le contexte (liste, rang, couche, champ). */
 function nb(brut: string, contexte: string): number {
   const v = lireNombre(brut);
-  if (v === null) throw new Refus(`${contexte} : nombre attendu, reçu « ${brut} »`);
+  if (v === null) throw new Refus(textes().refus.nombre(contexte, brut));
   return v;
 }
 
 function lirePoints(points: PointSaisi[], liste: string): Point[] {
+  const r = textes().refus;
   return points.map((p, i) => ({
-    x: nb(p.x, `${liste}, point ${i + 1}, x`),
-    y: nb(p.y, `${liste}, point ${i + 1}, y`),
+    x: nb(p.x, r.point(liste, i + 1, 'x')),
+    y: nb(p.y, r.point(liste, i + 1, 'y')),
   }));
 }
 
 function lireCouche(c: CoucheSaisie, rang: number): CoucheTalus {
-  const nom = c.nom.trim() === '' ? `Couche ${rang}` : c.nom.trim();
-  const ctx = (libelle: string): string => `Couche ${nom}, ${libelle}`;
+  const r = textes().refus;
+  const nom = c.nom.trim() === '' ? r.coucheSansNom(rang) : c.nom.trim();
+  const ctx = (champ: string): string => r.couche(nom, champ);
+  const champs = r.champsCouche;
   const commun = {
     nom,
-    base: nb(c.base, ctx('cote de base')),
-    gamma: nb(c.gamma, ctx('γ')),
-    gammaSat: nb(c.gammaSat, ctx('γsat')),
+    base: nb(c.base, ctx(champs.base)),
+    gamma: nb(c.gamma, ctx(champs.gamma)),
+    gammaSat: nb(c.gammaSat, ctx(champs.gammaSat)),
   };
   if (c.drainage === 'draine') {
-    const phiDeg = nb(c.phi, ctx("φ'k"));
+    const phiDeg = nb(c.phi, ctx(champs.phi));
     if (!(phiDeg > 0 && phiDeg < 90)) {
-      throw new Refus(`Couche ${nom}, φ'k hors de ]0 ; 90[ : reçu « ${c.phi} »`);
+      throw new Refus(r.phi(nom, c.phi));
     }
-    return { ...commun, drainage: 'draine', phiDeg, c: nb(c.c, ctx("c'k")) };
+    return { ...commun, drainage: 'draine', phiDeg, c: nb(c.c, ctx(champs.c)) };
   }
-  const cu = nb(c.cu, ctx('c_u,k'));
-  if (cu <= 0) throw new Refus(`Couche ${nom}, c_u,k doit être strictement positif : reçu « ${c.cu} »`);
+  const cu = nb(c.cu, ctx(champs.cu));
+  if (cu <= 0) throw new Refus(r.cu(nom, c.cu));
   return { ...commun, drainage: 'non_draine', cu };
 }
 
 function lireBande(b: BandeSaisie, rang: number): BandeTalus {
-  const ctx = (libelle: string): string => `Surcharge en bande ${rang}, ${libelle}`;
+  const r = textes().refus;
+  const ctx = (champ: string): string => r.bande(rang, champ);
   return {
-    x0: nb(b.x0, ctx('x début')),
-    x1: nb(b.x1, ctx('x fin')),
-    q: nb(b.q, ctx('q')),
+    x0: nb(b.x0, ctx(r.champsBande.x0)),
+    x1: nb(b.x1, ctx(r.champsBande.x1)),
+    q: nb(b.q, ctx(r.champsBande.q)),
     nature: b.nature,
   };
 }
@@ -155,17 +160,22 @@ function lireBande(b: BandeSaisie, rang: number): BandeTalus {
 /** Convertit la saisie ; refuse en nommant le premier champ illisible. */
 export function lireSaisie(s: Saisie): Lecture {
   try {
-    const profil = lirePoints(s.profil, 'Profil');
+    const r = textes().refus;
+    const profil = lirePoints(s.profil, r.listes.profil);
     const couches = s.couches.map((c, i) => lireCouche(c, i + 1));
-    const piezo = s.avecNappe ? lirePoints(s.piezo, 'Ligne piézométrique') : null;
+    const piezo = s.avecNappe ? lirePoints(s.piezo, r.listes.piezo) : null;
     const bandes = s.bandes.map((b, i) => lireBande(b, i + 1));
 
     let cercle: Cercle | null = null;
     let coteLimite: number | undefined;
     if (s.modeCercle === 'impose') {
-      cercle = { xc: nb(s.xc, 'Cercle, x_c'), yc: nb(s.yc, 'Cercle, y_c'), R: nb(s.R, 'Cercle, R') };
+      cercle = {
+        xc: nb(s.xc, r.cercle(r.champsCercle.xc)),
+        yc: nb(s.yc, r.cercle(r.champsCercle.yc)),
+        R: nb(s.R, r.cercle(r.champsCercle.R)),
+      };
     } else if (s.coteLimite.trim() !== '') {
-      coteLimite = nb(s.coteLimite, 'Cote limite');
+      coteLimite = nb(s.coteLimite, r.cote);
     }
 
     // ANB 2022 : l'approche est DA1, quelle que soit la liste.
@@ -301,7 +311,7 @@ function bandeOu(valeur: unknown): BandeSaisie | null {
 export function relire(contenu: string): Saisie {
   const brut = JSON.parse(contenu) as Record<string, unknown>;
   if (brut.format !== FORMAT) {
-    throw new Error(`Format inconnu : « ${String(brut.format)} » ; attendu ${FORMAT}`);
+    throw new Error(textes().refus.format(String(brut.format), FORMAT));
   }
 
   const d = saisieParDefaut();

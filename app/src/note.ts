@@ -43,9 +43,10 @@ const bloc = (titre: string, lignes: LigneResultat[], note: string | null = null
 
 /** Section d'une ligne d'entree : la geometrie, les couches, les surcharges, sinon les choix (nappe compris). */
 function sectionDe(symbole: string): Section {
-  if (symbole === 'profil' || symbole === 'cercle' || symbole === 'cote limite') return 'geometrie';
-  if (symbole.startsWith('couche ')) return 'materiaux';
-  if (symbole.startsWith('bande ')) return 'charges';
+  const s = textes().entrees.symboles;
+  if (symbole === s.profil || symbole === s.cercle || symbole === s.coteLimite) return 'geometrie';
+  if (symbole.startsWith(`${s.couche} `)) return 'materiaux';
+  if (symbole.startsWith(`${s.bande} `)) return 'charges';
   return 'hypotheses';
 }
 

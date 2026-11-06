@@ -198,3 +198,32 @@ Hors périmètre : T4 (`stabilite-talus/src/talus.ts`), non traité. Aucune norm
 - `lancer.mjs .` : 198 réussis, 24 échecs (17 de note, 7 de anglais, dont 2 liés à la note, point douteux 2).
 - `typecheck.mjs .` : 0 erreur (TypeScript 6.0.3).
 - Fichiers `tests/`, `src/`, `dessin.ts`, `vue.ts`, `main.ts`, `style.css` non modifiés.
+
+## T5 interface : version anglaise (`app/en/index.html`, `app/src/textes.ts`)
+
+**Statut** : fait. `anglais.test` : 24 réussis. Suite complète : 222 réussis, 0 échec. Typecheck : 0 erreur. Le point 2 de T4 (profil de 2e génération traduit) est résolu.
+
+**Fichiers modifiés**
+- `app/en/index.html` : squelette identique à `app/index.html` (id, data-*, type, inputmode, accept, value, même ordre), textes anglais, `lang="en"`, lien `../` vers la version française, script `../src/main.ts`.
+- `app/src/textes.ts` : clés `entrees.symboles`, `resultats.symboles`, `refus` (messages de saisie) et `page` (libellés générés par `main.ts`) en FR et EN. Table `EXACTES` et règles `REGLES` pour les phrases du noyau (cercle imposé, aucun cercle, approche refusée, angle de frottement, cohésion, c_u, poids volumiques, cotes de base, charge de bande, motifs, profils et sources, 2e génération).
+- `app/src/form.ts` : les messages de refus passent par `textes().refus`.
+- `app/src/vue.ts` : symboles de `blocEntrees` et de `blocsResultat` lus dans `textes()`.
+- `app/src/note.ts` : `sectionDe` compare aux symboles de `textes()` (plus de chaînes fixes).
+- `app/src/main.ts` : retirer, couches, surcharges, nature, vue caractéristique, message du talus type et erreur d'élément absent passent par `textes().page` et `textes().refus`.
+
+**Décisions**
+- Symboles en anglais : profile, layer, piezo, strip, circle, depth limit, approach, risk, normative profile, class. En français, ils restent ceux de la spécification (les tests fr les lisent).
+- Aucun `_` dans les traductions : « m_α » devient « mα », car `notationHtml` ne transforme `_` que devant un indice alphanumérique, pas devant une lettre grecque.
+- Guillemets anglais “ ” dans les messages de saisie.
+- Aucune dépendance ajoutée. Aucun fichier de `src/`, `tests/`, `sol-ec7`, `fondations-superficielles`, `_banc-local` modifié.
+
+**Points douteux**
+1. La traduction anglaise est écrite par Claude, non relue par un anglophone. Les libellés de la page n'ont pas été vérifiés à l'écran (aucun lancement dans le navigateur).
+2. Certains messages du noyau ont une règle ou une entrée mais aucun test ne les lit en anglais : non-convergence de Bishop, risque inconnu, poids volumique de l'eau, nombre de tranches.
+3. `main.ts` n'est testé que structurellement (`page.test`) : les parcours de clic en anglais ne sont pas testés.
+4. `sourceEn` reste une traduction mot à mot. Une phrase du noyau non prévue sort en français, et seul un marqueur français la fait échouer dans `anglais.test`.
+
+**Statut des tests**
+- `lancer.mjs . anglais.test` : 24 réussis, 0 échec.
+- `lancer.mjs .` (suite complète) : 222 réussis, 0 échec.
+- `typecheck.mjs .` : 0 erreur (TypeScript 6.0.3).

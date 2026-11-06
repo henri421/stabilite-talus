@@ -1,2 +1,313 @@
 <!doctype html>
-<html lang="en"></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slope stability — Bishop method, Eurocodes of both generations</title>
+    <meta
+      name="description"
+      content="General stability of a slope, cut or embankment by the simplified Bishop method, according to Eurocode 7, in both of its generations."
+    />
+    <meta name="theme-color" content="#f7f7f6" />
+    <link rel="icon" href="../icone.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="../icone-192.png" />
+  </head>
+  <body>
+    <div class="barre">
+      <div class="barre-corps">
+        <span class="barre-nom">webaedificium</span>
+        <div class="barre-actions">
+          <a class="barre-lien" href="https://henri421.github.io/WebAedificium/" target="_blank" rel="noopener">Suite</a>
+          <a class="barre-langue" href="../" hreflang="fr" lang="fr">FR</a>
+        </div>
+      </div>
+    </div>
+
+    <header>
+      <h1>Slope stability</h1>
+      <p class="sous-titre">
+        General stability of a slope, cut or embankment by the simplified Bishop method, in 1<sup>st</sup> or 2<sup>nd</sup>
+        generation.
+      </p>
+      <p class="avertissement">
+        Not covered: non-circular surfaces, inclined layers, reinforcements and nails, seismic action, tension cracks,
+        suction, free water above the ground, serviceability limit states.
+      </p>
+    </header>
+
+    <main>
+      <section id="saisie" aria-label="Input">
+        <form id="formulaire" autocomplete="off" novalidate>
+          <fieldset>
+            <legend>Ground profile (m)</legend>
+            <table class="points">
+              <thead>
+                <tr>
+                  <th scope="col" class="n">x</th>
+                  <th scope="col" class="n">y</th>
+                  <th scope="col"><span class="clause">Remove</span></th>
+                </tr>
+              </thead>
+              <tbody data-role="profil"></tbody>
+            </table>
+            <div class="boutons">
+              <button type="button" data-action="ajouter-point">Add a point</button>
+            </div>
+            <details data-role="talus-type">
+              <summary>Standard slope…</summary>
+              <div>
+                <label>
+                  <span>Height H (m)</span>
+                  <input type="text" inputmode="decimal" data-type="H" value="10" />
+                </label>
+                <label>
+                  <span>Slope n (horizontal for 1 vertical)</span>
+                  <input type="text" inputmode="decimal" data-type="n" value="1,5" />
+                </label>
+                <label>
+                  <span>Crest length (m)</span>
+                  <input type="text" inputmode="decimal" data-type="crete" value="25" />
+                </label>
+                <label>
+                  <span>Toe length (m)</span>
+                  <input type="text" inputmode="decimal" data-type="pied" value="25" />
+                </label>
+                <div class="boutons">
+                  <button type="button" data-action="talus-type">Fill the profile</button>
+                </div>
+              </div>
+            </details>
+            <p class="note">
+              “Standard slope” fills the profile from the height, the slope and the crest and toe lengths: the usual case
+              without a table of points. The x values must increase.
+            </p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Layers (horizontal boundaries)</legend>
+            <div data-role="couches"></div>
+            <div class="boutons">
+              <button type="button" data-action="ajouter-couche">Add a layer</button>
+            </div>
+            <p class="note">
+              A layer runs from its base up to the layer above, or to the ground. “Undrained” replaces φ’<sub>k</sub> and
+              c’<sub>k</sub> by c<sub>u,k</sub>. Both behaviours can coexist from one layer to the next.
+            </p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Piezometric line</legend>
+            <label class="case">
+              <input type="checkbox" data-champ="avecNappe" />
+              <span>Water table to take into account</span>
+            </label>
+            <div data-si-nappe>
+              <table class="points">
+                <thead>
+                  <tr>
+                    <th scope="col" class="n">x</th>
+                    <th scope="col" class="n">y</th>
+                    <th scope="col"><span class="clause">Remove</span></th>
+                  </tr>
+                </thead>
+                <tbody data-role="piezo"></tbody>
+              </table>
+              <div class="boutons">
+                <button type="button" data-action="ajouter-point-nappe">Add a point</button>
+              </div>
+              <label>
+                <span>Level of the horizontal line (m)</span>
+                <input type="text" inputmode="decimal" data-role="cote-horizontale" value="7" />
+              </label>
+              <div class="boutons">
+                <button type="button" data-action="nappe-horizontale">Horizontal</button>
+              </div>
+            </div>
+            <p class="note">
+              Hydrostatic pressure below the line, γ<sub>w</sub> = 9.81 kN/m³. A single line for all the combinations: enter
+              the unfavourable position here.
+            </p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Strip loads</legend>
+            <table class="points">
+              <thead>
+                <tr>
+                  <th scope="col" class="n">x start</th>
+                  <th scope="col" class="n">x end</th>
+                  <th scope="col" class="n">q (kPa)</th>
+                  <th scope="col">Nature</th>
+                  <th scope="col"><span class="clause">Remove</span></th>
+                </tr>
+              </thead>
+              <tbody data-role="bandes"></tbody>
+            </table>
+            <div class="boutons">
+              <button type="button" data-action="ajouter-bande">Add a strip</button>
+            </div>
+            <p class="note">
+              A variable load on the stabilising side of the circle is not counted, and the table of slices says so.
+            </p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Circle</legend>
+            <div class="boutons">
+              <button type="button" data-cercle="recherche" aria-pressed="true">Search for the critical</button>
+              <button type="button" data-cercle="impose" aria-pressed="false">Impose</button>
+            </div>
+            <div data-si-cercle="recherche">
+              <label>
+                <span>Depth limit (m)</span>
+                <input type="text" inputmode="decimal" data-champ="coteLimite" />
+              </label>
+              <p class="note">
+                Empty, no limit. The depth limit stands for a stiff stratum that the circle does not cross.
+              </p>
+            </div>
+            <div data-si-cercle="impose">
+              <label>
+                <span>Abscissa x<sub>c</sub> (m)</span>
+                <input type="text" inputmode="decimal" data-champ="xc" />
+              </label>
+              <label>
+                <span>Ordinate y<sub>c</sub> (m)</span>
+                <input type="text" inputmode="decimal" data-champ="yc" />
+              </label>
+              <label>
+                <span>Radius R (m)</span>
+                <input type="text" inputmode="decimal" data-champ="R" />
+              </label>
+            </div>
+            <p class="note">
+              “Search for the critical” looks for the most unfavourable circle for each combination: the circle of DA1-1 is
+              not necessarily that of DA1-2.
+            </p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Generation and factors</legend>
+            <div class="generations">
+              <button type="button" data-generation="1re" aria-pressed="true">1<sup>st</sup> generation (2004)</button>
+              <button type="button" data-generation="2e" aria-pressed="false">2<sup>nd</sup> generation (2023-2025)</button>
+            </div>
+            <div data-groupe="1re">
+              <label>
+                <span>Factors</span>
+                <select data-champ="profilNormatif">
+                  <option value="recommande">Recommended values</option>
+                  <option value="anb2022">NBN EN 1997-1 ANB:2022</option>
+                </select>
+              </label>
+              <div data-si-profil="anb2022">
+                <label>
+                  <span>Risk</span>
+                  <select data-champ="risque">
+                    <option value="faible">Low</option>
+                    <option value="normal">Normal</option>
+                    <option value="eleve">High</option>
+                  </select>
+                </label>
+              </div>
+              <label>
+                <span>Design approach</span>
+                <select data-champ="approche1">
+                  <option value="DA1">DA1 (combinations 1 and 2)</option>
+                  <option value="DA2">DA2</option>
+                  <option value="DA3">DA3</option>
+                </select>
+              </label>
+              <p class="note">
+                With ANB:2022, the approach is fixed to DA1 (greyed list), and the risk (low, normal, high) is taken into
+                account.
+              </p>
+            </div>
+            <div data-groupe="2e">
+              <label>
+                <span>Consequence class</span>
+                <select data-champ="consequences">
+                  <option value="CC1">CC1</option>
+                  <option value="CC2">CC2</option>
+                  <option value="CC3">CC3</option>
+                </select>
+              </label>
+              <p class="note">
+                The 2<sup>nd</sup> generation offers only the consequence class: VC3 + M2, material approach (EN 1997-3,
+                table 4.2).
+              </p>
+            </div>
+            <p class="note">Switching generation keeps the data.</p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Out of scope</legend>
+            <p class="note">
+              Not covered: non-circular surfaces, inclined layers, reinforcements and nails, seismic action, tension cracks,
+              suction, free water above the ground, serviceability limit states.
+            </p>
+          </fieldset>
+        </form>
+      </section>
+
+      <div class="colonne">
+        <section id="sorties" aria-label="Results">
+          <h2>Results</h2>
+          <p class="erreur" data-role="erreur" hidden></p>
+          <div data-role="verdicts"></div>
+          <div data-role="volets"></div>
+        </section>
+
+        <section aria-label="Drawing">
+          <h2>Drawing</h2>
+          <p class="note">A cross-section to real scale, same scale in x and y. The governing case opens first.</p>
+          <div class="boutons" data-role="vues"></div>
+          <div class="boutons">
+            <label class="case">
+              <input type="checkbox" data-option="cotes" checked />
+              <span>Dimensions</span>
+            </label>
+            <label class="case">
+              <input type="checkbox" data-option="tranches" checked />
+              <span>Slices</span>
+            </label>
+          </div>
+          <div data-role="coupe"></div>
+          <div data-role="tranches"></div>
+        </section>
+
+        <section aria-label="Exports">
+          <h2>Exports</h2>
+          <label>
+            <span>Project</span>
+            <input type="text" data-role="projet" />
+          </label>
+          <label>
+            <span>Element</span>
+            <input type="text" data-role="element" />
+          </label>
+          <div class="boutons">
+            <button type="button" data-action="exporter-note">Calculation note</button>
+            <button type="button" data-action="exporter-coupe">SVG section</button>
+            <button type="button" data-action="exporter-resultats">Results CSV</button>
+            <button type="button" data-action="enregistrer">Save the input</button>
+            <button type="button" data-action="reinitialiser">Reset</button>
+          </div>
+          <label>
+            <span>Open a saved input</span>
+            <input type="file" data-role="ouvrir" accept=".json,application/json" />
+          </label>
+          <p class="note">
+            The input is kept in this browser. Opened files are read locally, with no upload to the network.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>Slope stability · local verification tool · Eurocode 7.</p>
+    </footer>
+
+    <script type="module" src="../src/main.ts"></script>
+  </body>
+</html>

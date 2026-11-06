@@ -167,6 +167,7 @@ export function tranchesHtml(r: Resultat, vue: string): string {
 /** Donnees d'entree : profil, couches, nappe, bandes, cercle ou cote limite, puis les choix normatifs. */
 export function blocEntrees(calcul: Calcul): BlocResultat {
   const t = textes().entrees;
+  const S = t.symboles;
   const d = calcul.donnees;
   const lignes: { symbole: string; libelle: string; valeur: string }[] = [];
   const ligne = (symbole: string, libelle: string, valeur: string): void => {
@@ -176,7 +177,7 @@ export function blocEntrees(calcul: Calcul): BlocResultat {
   const pts = d.profil;
   if (pts.length > 0) {
     ligne(
-      'profil',
+      S.profil,
       t.profil,
       `${t.points(pts.length)}, ${t.plage(aff(pts[0].x, 2), aff(pts[pts.length - 1].x, 2))}`,
     );
@@ -188,38 +189,38 @@ export function blocEntrees(calcul: Calcul): BlocResultat {
         ? `${t.drainee}, φ′k = ${aff(c.phiDeg ?? Number.NaN)} °, c′k = ${aff(c.c ?? Number.NaN)} kPa`
         : `${t.nonDrainee}, c_u,k = ${aff(c.cu ?? Number.NaN)} kPa`;
     ligne(
-      `couche ${i + 1}`,
+      `${S.couche} ${i + 1}`,
       t.couche(c.nom),
       `${comp}, base ${aff(c.base, 2)} m, γ = ${aff(c.gamma, 2)} kN/m³, γsat = ${aff(c.gammaSat, 2)} kN/m³`,
     );
   });
 
   if (d.piezo !== null) {
-    ligne('nappe', t.nappe, `${t.points(d.piezo.length)}, ${t.poidsEau}`);
+    ligne(S.nappe, t.nappe, `${t.points(d.piezo.length)}, ${t.poidsEau}`);
   }
 
   d.bandes.forEach((b, i) => {
     ligne(
-      `bande ${i + 1}`,
+      `${S.bande} ${i + 1}`,
       t.bande,
       `${t.plage(aff(b.x0, 2), aff(b.x1, 2))}, q = ${aff(b.q)} kPa, ${t.nature[b.nature]}`,
     );
   });
 
   if (d.cercle !== null) {
-    ligne('cercle', t.cercleImpose, textes().vue.cercle(aff(d.cercle.xc, 2), aff(d.cercle.yc, 2), aff(d.cercle.R, 2)));
+    ligne(S.cercle, t.cercleImpose, textes().vue.cercle(aff(d.cercle.xc, 2), aff(d.cercle.yc, 2), aff(d.cercle.R, 2)));
   } else {
-    ligne('cote limite', t.coteLimite, d.coteLimite === undefined ? t.aucune : `${aff(d.coteLimite, 2)} m`);
+    ligne(S.coteLimite, t.coteLimite, d.coteLimite === undefined ? t.aucune : `${aff(d.coteLimite, 2)} m`);
   }
 
   ligne(t.symboleGeneration, t.generation, t.generations[d.generation]);
   if (d.generation === '1re') {
     const anb = d.profilNormatif === 'anb2022';
-    ligne('approche', t.approche, anb ? `${d.approche}, ${t.approcheImposee}` : d.approche);
-    if (anb) ligne('risque', t.risque, t.risques[d.risque]);
-    ligne('profil normatif', t.profilNormatif, t.profils[d.profilNormatif]);
+    ligne(S.approche, t.approche, anb ? `${d.approche}, ${t.approcheImposee}` : d.approche);
+    if (anb) ligne(S.risque, t.risque, t.risques[d.risque]);
+    ligne(S.profilNormatif, t.profilNormatif, t.profils[d.profilNormatif]);
   } else {
-    ligne('classe', t.classe, d.cc);
+    ligne(S.classe, t.classe, d.cc);
   }
 
   return { titre: t.titre, lignes, note: null };
@@ -241,8 +242,8 @@ export function blocsResultat(r: Resultat): BlocResultat[] {
   const synthese: BlocResultat = {
     titre: t.titre,
     lignes: [
-      { symbole: 'taux max', libelle: t.tauxMax, valeur: taux(r.tauxMax) },
-      { symbole: 'gouvernant', libelle: t.gouvernant, valeur: phrase(r.gouvernant) },
+      { symbole: t.symboles.tauxMax, libelle: t.tauxMax, valeur: taux(r.tauxMax) },
+      { symbole: t.symboles.gouvernant, libelle: t.gouvernant, valeur: phrase(r.gouvernant) },
     ],
     note: null,
   };
@@ -253,7 +254,7 @@ export function blocsResultat(r: Resultat): BlocResultat[] {
       lignes: [
         { symbole: 'F_d', libelle: t.F, valeur: aff(c.F, 3) },
         ...(g === undefined ? [] : [{ symbole: 'γ_R;e', libelle: t.gammaRe, valeur: aff(g, 2) }]),
-        { symbole: 'taux', libelle: t.taux, valeur: taux(c.taux) },
+        { symbole: t.symboles.taux, libelle: t.taux, valeur: taux(c.taux) },
         ...lignesCercle(c.cercle),
       ],
       note: null,

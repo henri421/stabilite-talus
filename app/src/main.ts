@@ -49,7 +49,7 @@ const CLE_CARTOUCHE = 'stabilite-talus:cartouche';
 
 function exige<T extends Element>(selecteur: string): T {
   const e = document.querySelector<T>(selecteur);
-  if (e === null) throw new Error(`Élément absent de la page : ${selecteur}`);
+  if (e === null) throw new Error(textes().page.elementAbsent(selecteur));
   return e;
 }
 
@@ -133,37 +133,41 @@ function ecrireSaisie(): void {
 }
 
 function ligneDePoint(liste: 'profil' | 'piezo', p: PointSaisi, i: number): string {
+  const t = textes().page;
   const cellule = (coord: 'x' | 'y'): string =>
     `<td><input type="text" inputmode="decimal" data-liste="${liste}" data-index="${i}" data-coord="${coord}" value="${echapper(p[coord])}" aria-label="${coord}, point ${i + 1}" /></td>`;
-  return `<tr>${cellule('x')}${cellule('y')}<td><button type="button" data-action="retirer-point" data-liste="${liste}" data-index="${i}" aria-label="Retirer le point ${i + 1}">×</button></td></tr>`;
+  return `<tr>${cellule('x')}${cellule('y')}<td><button type="button" data-action="retirer-point" data-liste="${liste}" data-index="${i}" aria-label="${t.retirerPoint(i + 1)}">×</button></td></tr>`;
 }
 
 function ligneDeBande(b: BandeSaisie, i: number): string {
+  const t = textes();
   const cellule = (cle: 'x0' | 'x1' | 'q', aria: string): string =>
-    `<td><input type="text" inputmode="decimal" data-bande="${i}" data-champ-bande="${cle}" value="${echapper(b[cle])}" aria-label="${aria}, surcharge ${i + 1}" /></td>`;
+    `<td><input type="text" inputmode="decimal" data-bande="${i}" data-champ-bande="${cle}" value="${echapper(b[cle])}" aria-label="${aria}, ${t.page.surcharge(i + 1)}" /></td>`;
   const nature = (valeur: 'G' | 'Q'): string => (b.nature === valeur ? ' selected' : '');
-  return `<tr>${cellule('x0', 'x début')}${cellule('x1', 'x fin')}${cellule('q', 'q')}
-    <td><select data-bande="${i}" data-champ-bande="nature" aria-label="Nature, surcharge ${i + 1}"><option value="G"${nature('G')}>G</option><option value="Q"${nature('Q')}>Q</option></select></td>
-    <td><button type="button" data-action="retirer-bande" data-bande="${i}" aria-label="Retirer la surcharge ${i + 1}">×</button></td></tr>`;
+  const champs = t.refus.champsBande;
+  return `<tr>${cellule('x0', champs.x0)}${cellule('x1', champs.x1)}${cellule('q', champs.q)}
+    <td><select data-bande="${i}" data-champ-bande="nature" aria-label="${t.page.nature}, ${t.page.surcharge(i + 1)}"><option value="G"${nature('G')}>G</option><option value="Q"${nature('Q')}>Q</option></select></td>
+    <td><button type="button" data-action="retirer-bande" data-bande="${i}" aria-label="${t.page.retirerSurcharge(i + 1)}">×</button></td></tr>`;
 }
 
 /** Un bloc par couche (pas de tableau) : nom, comportement, cote de base, poids, puis φ’ et c’ ou c_u. */
 function blocCouche(c: CoucheSaisie, i: number): string {
   const n = i + 1;
+  const t = textes().page;
   const draine = c.drainage === 'draine';
   const champ = (cle: Exclude<ChampCouche, 'nom'>, libelle: string, aria: string): string =>
-    `<label><span>${libelle}</span><input type="text" inputmode="decimal" data-couche="${i}" data-champ-couche="${cle}" value="${echapper(c[cle])}" aria-label="${aria} de la couche ${n}" /></label>`;
+    `<label><span>${libelle}</span><input type="text" inputmode="decimal" data-couche="${i}" data-champ-couche="${cle}" value="${echapper(c[cle])}" aria-label="${t.champCouche(aria, n)}" /></label>`;
   return `<fieldset>
-    <legend>Couche ${n}</legend>
-    <label><span>Nom</span><input type="text" data-couche="${i}" data-champ-couche="nom" value="${echapper(c.nom)}" aria-label="Nom de la couche ${n}" /></label>
+    <legend>${t.couche(n)}</legend>
+    <label><span>${t.nom}</span><input type="text" data-couche="${i}" data-champ-couche="nom" value="${echapper(c.nom)}" aria-label="${t.nomCouche(n)}" /></label>
     <div class="boutons">
-      <button type="button" data-couche="${i}" data-drainage="draine" aria-pressed="${draine}">Drainé</button>
-      <button type="button" data-couche="${i}" data-drainage="non_draine" aria-pressed="${!draine}">Non drainé</button>
-      <button type="button" data-action="retirer-couche" data-couche="${i}" aria-label="Retirer la couche ${n}">Retirer</button>
+      <button type="button" data-couche="${i}" data-drainage="draine" aria-pressed="${draine}">${t.drainee}</button>
+      <button type="button" data-couche="${i}" data-drainage="non_draine" aria-pressed="${!draine}">${t.nonDrainee}</button>
+      <button type="button" data-action="retirer-couche" data-couche="${i}" aria-label="${t.retirerCouche(n)}">${t.retirer}</button>
     </div>
-    ${champ('base', 'Cote de base (m)', 'Cote de base')}
-    <label><span>γ (kN/m³)</span><input type="text" inputmode="decimal" data-couche="${i}" data-champ-couche="gamma" value="${echapper(c.gamma)}" aria-label="γ de la couche ${n}" /></label>
-    <label><span>γ<sub>sat</sub> (kN/m³)</span><input type="text" inputmode="decimal" data-couche="${i}" data-champ-couche="gammaSat" value="${echapper(c.gammaSat)}" aria-label="γsat de la couche ${n}" /></label>
+    ${champ('base', t.coteBaseLibelle, t.coteBase)}
+    <label><span>γ (kN/m³)</span><input type="text" inputmode="decimal" data-couche="${i}" data-champ-couche="gamma" value="${echapper(c.gamma)}" aria-label="${t.champCouche('γ', n)}" /></label>
+    <label><span>γ<sub>sat</sub> (kN/m³)</span><input type="text" inputmode="decimal" data-couche="${i}" data-champ-couche="gammaSat" value="${echapper(c.gammaSat)}" aria-label="${t.champCouche('γsat', n)}" /></label>
     ${draine ? champ('phi', 'φ’<sub>k</sub> (°)', 'φ’k') + champ('c', 'c’<sub>k</sub> (kPa)', 'c’k') : champ('cu', 'c<sub>u,k</sub> (kPa)', 'c_u,k')}
   </fieldset>`;
 }
@@ -217,7 +221,7 @@ function optionsDessin(): { cotes: boolean; tranches: boolean } {
   };
 }
 
-const libelleVue = (v: string): string => (v === 'caracteristique' ? 'Caractéristique' : v);
+const libelleVue = (v: string): string => (v === 'caracteristique' ? textes().page.caracteristique : v);
 
 function dessinerVues(): void {
   const vues = dernier === null ? [] : vuesDisponibles(dernier.resultat);
@@ -389,7 +393,7 @@ document.addEventListener('click', (evenement) => {
     const crete = nombreDuTalusType('crete');
     const pied = nombreDuTalusType('pied');
     if (H === null || n === null || crete === null || pied === null) {
-      return montrerErreur('Talus type : hauteur, pente, longueurs de crête et de pied doivent être des nombres.');
+      return montrerErreur(textes().page.talusType);
     }
     saisie.profil = talusType(H, n, crete, pied);
     dessinerListes();
