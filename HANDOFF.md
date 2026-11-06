@@ -167,3 +167,34 @@ Hors périmètre : T4 (`stabilite-talus/src/talus.ts`), non traité. Aucune norm
 - `lancer.mjs . vue.test` : `71 réussis, 0 échec`.
 - `typecheck.mjs .` : `typecheck : 0 erreur (TypeScript 6.0.3)`.
 - Aucun fichier de `src/`, `tests/`, `dessin.ts`, `main.ts` ou `form.ts` modifié.
+
+## T4 interface : note et exports (`app/src/note.ts`, `app/src/export.ts`, `app/src/textes.ts`)
+
+**Statut** : fait, en attente d'une correction dans `vue.ts` (voir points douteux 1). Commit « T4: note et exports ».
+
+**Fichiers modifiés**
+- `app/src/note.ts` : `noteDuCalcul(calcul, r, cartouche)`. Signature conservée.
+- `app/src/export.ts` : `STYLES_TRACE`, règles « Coupe du talus (T3) » de `style.css`, jetons remplacés par leurs valeurs (`--eau` compris).
+- `app/src/textes.ts` : clé `note` ajoutée en FR et EN (élément, légende, « aucune surcharge », clauses, hypothèses). Aucune clé existante touchée.
+
+**Décisions**
+- Sections : géométrie = bloc des lignes `profil`, `cercle`, `cote limite` et la coupe cotée de la vue gouvernante (une seule figure) ; matériaux = `couche k` ; hypothèses = `nappe` et les choix normatifs, puis la liste (profil normatif via `phrase`, puis les hypothèses fixes) ; charges = `bande k`, ou le texte « Aucune surcharge en bande. ».
+- Règle de rangement : tout symbole non reconnu va aux hypothèses, pour qu'aucune ligne de `blocEntrees` ne se perde.
+- Calculs : les blocs de `blocsResultat` sans la synthèse (un par combinaison, puis « F caractéristique »), suivis d'un bloc de coefficients partiels par combinaison, mode en note du bloc. Les coefficients ne figuraient pas dans la spécification T4 ; ils viennent du gabarit fondations. Pour les retirer, supprimer `...blocsCoefficients(r)`.
+- Vérifications : une par combinaison, nom = `phrase(c.nom)`, clause §11.5.1 (1re) ou EN 1997-3 §4.6.3 (2e), taux = `c.taux`, ok = `taux <= 1`. Pas de verdict global ; la note affiche la verification déterminante.
+- Avertissements : `r.alertes` via `phrase`.
+- Normes du cartouche : 1re, avec ANB si `profilNormatif === 'anb2022'` ; 2e. Outil `stabilite-talus`. Élément vide : « Talus » / « Slope ».
+- Textes des hypothèses écrits sans `_` ni balise (convention de `textes.ts`) : `γw`, `mα`, `10⁻⁷`. La liste passe par `notationHtml`, qui échapperait les balises.
+- Aucun `Math.sin/cos/tan/atan/exp/sqrt` dans `note.ts`. Aucune dépendance ajoutée.
+
+**Points douteux**
+1. Bloquant, hors de mon périmètre : 17 tests de `note.test` (« texte visible de la note ») échouent. Le seul constat est « accent manquant » sur le symbole `generation` (ligne de choix générée par `blocEntrees`, `vue.ts`, qui figure dans `MOTS_SANS_ACCENT`). Le test porte bien sur le texte affiché : il a raison. Correction proposée à faire dans `vue.ts` : symbole `génération` (accentué). Le test « rangées une fois » compare à `blocEntrees`, il reste vert.
+2. Anglais : `phrase(r.profil)` ne traduit pas le profil de 2e génération, « EN 1997:2024-2025, valeurs recommandées » (dans la note comme dans les verdicts). À ajouter à la table exacte de `textes.ts` (T2/T5). Le nom du profil (« EN 1997:2024-2025 ») diffère aussi de la norme du cartouche (« EN 1997-1:2024, EN 1997-3:2025 »). À arbitrer.
+3. `anglais.test` : échecs sur la page anglaise (T5) et sur les textes français des volets et verdicts (T2). Le texte de la note en anglais n'est signalé que pour le point 2.
+4. Les textes des hypothèses sont en clair Unicode (`mα`, `γw`) faute de balises ; lisibilité un peu moindre que `m<sub>α</sub>` de la maquette.
+
+**Statut des tests**
+- `lancer.mjs . note.test` : 35 réussis, 17 échecs (tous « texte visible de la note », point douteux 1).
+- `lancer.mjs .` : 198 réussis, 24 échecs (17 de note, 7 de anglais, dont 2 liés à la note, point douteux 2).
+- `typecheck.mjs .` : 0 erreur (TypeScript 6.0.3).
+- Fichiers `tests/`, `src/`, `dessin.ts`, `vue.ts`, `main.ts`, `style.css` non modifiés.

@@ -88,6 +88,21 @@ const FR = {
       nonRetenue: 'non retenue',
     },
   },
+  note: {
+    element: 'Talus',
+    legendeCoupe: 'Coupe du talus à l’échelle, vue gouvernante.',
+    aucuneCharge: 'Aucune surcharge en bande.',
+    clauses: { generation1: '§11.5.1', generation2: 'EN 1997-3 §4.6.3' },
+    coefficients: 'Coefficients partiels',
+    hypotheses: [
+      'Bishop simplifié : F itéré jusqu’à une variation inférieure à 10⁻⁷, 200 itérations au plus.',
+      'Poids volumique de l’eau γw = 9,81 kN/m³ ; pression u = γw × hauteur d’eau au-dessus de la base, sans coefficient.',
+      '50 tranches verticales, les mêmes pour la recherche et pour le cercle affiché.',
+      'Surcharge variable stabilisatrice non comptée : elle n’est retenue que sur les tranches motrices.',
+      'mα borné à 0,2 : la sortie de glissement raide est signalée.',
+      'Couches à limites horizontales ; une seule ligne piézométrique ; eau au-dessus du terrain sans poids ni poussée.',
+    ],
+  },
   resultats: {
     titre: 'Résultats',
     tauxMax: 'Taux maximal',
@@ -184,6 +199,21 @@ const EN: Textes = {
       },
       nonRetenue: 'not counted',
     },
+  },
+  note: {
+    element: 'Slope',
+    legendeCoupe: 'Slope section to scale, governing view.',
+    aucuneCharge: 'No strip load.',
+    clauses: { generation1: '§11.5.1', generation2: 'EN 1997-3 §4.6.3' },
+    coefficients: 'Partial factors',
+    hypotheses: [
+      'Simplified Bishop: F iterated until a change below 10⁻⁷, 200 iterations at most.',
+      'Unit weight of water γw = 9.81 kN/m³; water pressure u = γw × height of water above the base, without factor.',
+      '50 vertical slices, the same for the search and for the displayed circle.',
+      'Stabilising variable surcharge not counted: it is retained only on the driving slices.',
+      'mα capped at 0.2: steep slip exit flagged.',
+      'Layers with horizontal boundaries; a single piezometric line; water above the ground without weight or thrust.',
+    ],
   },
   resultats: {
     titre: 'Results',
