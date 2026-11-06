@@ -78,8 +78,8 @@ export interface ResultatCombinaison {
 export interface ResultatTalus {
   /** Nom du profil de coefficients. */
   profil: string;
-  /** Coefficients a 1, sans verdict. */
-  caracteristique: { cercle: Cercle; F: number };
+  /** Coefficients a 1, sans verdict ; le resultat porte les tranches, pour le dessin. */
+  caracteristique: { cercle: Cercle; F: number; resultat: Extract<ResultatCercle, { valide: true }> };
   combinaisons: ResultatCombinaison[];
   gouvernant: string;
   tauxMax: number;
@@ -118,7 +118,7 @@ function combinaisonCaracteristique(): CombinaisonStabilite {
   const source = 'valeur caractéristique, coefficient à 1';
   const un = { valeur: 1, source };
   return {
-    nom: 'caracteristique',
+    nom: 'caractéristique',
     mode: 'actions',
     actions: {
       gG_dst: un,
@@ -141,7 +141,7 @@ function solution(donnees: DonneesBishop, imposé: Cercle | null, coteLimite: nu
   if (imposé) {
     const r = analyserCercle(donnees, imposé);
     if (!r.valide) {
-      throw new Error(`Le cercle imposé est invalide pour ${donnees.combinaison.nom} : ${r.motif}.`);
+      throw new Error(`Le cercle imposé est invalide (${donnees.combinaison.nom}) : ${r.motif}.`);
     }
     return { cercle: imposé, resultat: r };
   }
@@ -149,7 +149,7 @@ function solution(donnees: DonneesBishop, imposé: Cercle | null, coteLimite: nu
   const t = rechercherCercleCritique(donnees, options);
   if (!t) {
     throw new Error(
-      `Aucun cercle valide trouvé pour la combinaison ${donnees.combinaison.nom} : vérifier le profil, les couches et la cote limite.`
+      `Aucun cercle valide trouvé (${donnees.combinaison.nom}) : vérifier le profil, les couches et la cote limite.`
     );
   }
   return { cercle: t.cercle, resultat: t.resultat };
@@ -203,7 +203,7 @@ export function verifierTalus(d: DonneesTalus): ResultatTalus {
 
   return {
     profil,
-    caracteristique: { cercle: caracteristique.cercle, F: caracteristique.resultat.F },
+    caracteristique: { cercle: caracteristique.cercle, F: caracteristique.resultat.F, resultat: caracteristique.resultat },
     combinaisons: resultats,
     gouvernant: gouvernant.nom,
     tauxMax: gouvernant.taux,
