@@ -72,8 +72,8 @@ volets 235 à 252, verdicts 255 à 260.
 | T3 | `dessin.ts` | la maquette | `dessin.test` | T1 | fait (0416863), contrôle visuel fait |
 | T4 | `note.ts`, `export.ts` | `fondations-superficielles/app/src/note.ts`, `export.ts` | `note.test` | T2, T3 | fait (530768a) |
 | T5 | `app/en/index.html`, `textes.ts` | `fondations-superficielles/app/en/index.html` | `anglais.test` | T4 | fait (83ee86a) |
-| T6 | icônes, README, lock, publication | | | T5 | local fait (ba03162) ; lock et publication en attente du dépôt |
-| T7 | carte et menu du hub ; renvoi de Fondbis | | | T6 | carte locale (hub d0a6711), non poussée ; renvoi de Fondbis à faire |
+| T6 | icônes, README, lock, publication | | | T5 | fait, publié le 2026-11-07 (sol-ec7 v0.2.0) |
+| T7 | carte et menu du hub ; renvoi de Fondbis | | | T6 | fait le 2026-11-07 (hub d0a6711, Fondbis 7f166ca) |
 
 `app/src/style.css` et `pwa.ts` sont déjà copiés des fondations : n'ajouter à la fin de `style.css` que les règles
 manquantes (la classe `.terrain` y remplit une surface : le profil dessiné s'appelle donc `ligne-terrain`). `page.test`
