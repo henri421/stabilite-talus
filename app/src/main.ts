@@ -8,6 +8,7 @@
 
 import {
   blocsEnTexte,
+  brancherFeuilles,
   definirLangue,
   echapper,
   langueDuDocument,
@@ -18,6 +19,8 @@ import {
   resultatsEnCsv,
   svgAutonome,
   telecharger,
+  type BarreFeuilles,
+  type Json,
 } from 'aedificium-ui';
 import {
   lireSaisie,
@@ -101,6 +104,12 @@ function lireCartouche(): { projet: string; element: string } {
 }
 
 let saisie: Saisie = charger() ?? saisieParDefaut();
+
+/**
+ * Feuilles de calcul d'un projet de la suite. Dans un projet, chaque saisie
+ * va dans la feuille courante, pas dans la memoire « hors projet » de l'app.
+ */
+let barre: BarreFeuilles | null = null;
 
 interface Dernier {
   calcul: Calcul;
@@ -251,7 +260,8 @@ function viderResultats(): void {
 }
 
 function recalculer(): void {
-  memoriser();
+  if (barre?.dansUnProjet()) barre.signaler();
+  else memoriser();
   ajusterAffichage();
   const lecture = lireSaisie(saisie);
   if (!lecture.ok) {
@@ -486,6 +496,18 @@ for (const champ of [champProjet, champElement]) {
     }
   });
 }
+
+barre = brancherFeuilles({
+  app: 'stabilite-talus',
+  nomApp: exige<HTMLElement>('header h1').textContent ?? 'stabilite-talus',
+  conteneur: exige<HTMLElement>('[data-role="feuilles"]'),
+  lire: () => JSON.parse(serialiser(saisie)) as Json,
+  charger: (d) => {
+    saisie = d === null ? saisieParDefaut() : relire(JSON.stringify(d));
+    ecrireSaisie();
+    recalculer();
+  },
+});
 
 ecrireSaisie();
 recalculer();

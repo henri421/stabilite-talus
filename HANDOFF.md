@@ -239,3 +239,15 @@ Hors périmètre : T4 (`stabilite-talus/src/talus.ts`), non traité. Aucune norm
   - lignes ajoutées (point, couche, bande) pré-remplies : un ajout n'affiche plus d'erreur ;
   - symbole « génération » accentué.
 - Restent : noms des couches par défaut (Limon, Argile) en français sur la page anglaise ; recalcul à chaque frappe sans différé (environ 0,15 s, acceptable) ; traduction anglaise non relue par un anglophone.
+
+## Lot 9.5 — feuilles
+
+**Fichiers modifiés** : `app/index.html`, `app/en/index.html` (div `data-role="feuilles"` après `</header>`), `app/src/style.css` (`.feuilles` ajouté à la règle `header, main, footer` ; règles `.feuilles` et `.feuilles:empty` en fin de fichier), `app/src/main.ts` (import de `brancherFeuilles`, `type BarreFeuilles`, `type Json` ; `let barre` après `let saisie` ; `recalculer()` signale la barre dans un projet, sinon `memoriser()` ; `brancherFeuilles({ app: 'stabilite-talus', … })` juste avant le démarrage).
+
+**Décisions** : branchement exactement selon le lot, `exige<HTMLElement>('header h1')` pour le nom de l'app, `lire` = `JSON.parse(serialiser(saisie))`, `charger` recharge la saisie puis `ecrireSaisie(); recalculer();`. Aucun libellé ni marquage ajouté.
+
+**Points douteux** : aucun dans le code. Le brancher est appelé avant le premier `ecrireSaisie()`, donc `barre` est encore `null` si `brancherFeuilles` appelle `charger` de façon synchrone ; `recalculer()` passe alors par `memoriser()`, ce qui est voulu.
+
+**Tests** : `_banc-local/lancer.mjs stabilite-talus` : 228 réussis, 0 échec (dont `tests\app\feuilles.test.ts` 6/6). **Typecheck** : `_banc-local/typecheck.mjs stabilite-talus` : 0 erreur (TypeScript 6.0.3).
+
+**Non commité** : Claude audite et commite.

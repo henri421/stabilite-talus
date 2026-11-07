@@ -57,6 +57,7 @@ body {
 }
 
 header,
+.feuilles,
 main,
 footer {
   max-width: 68rem;
@@ -681,3 +682,11 @@ svg .titre-coupe { fill: var(--refus); font-size: 12px; font-weight: 600; font-f
 .jauge > i { display: block; height: 100%; background: var(--ok); }
 .verdict.depasse .jauge > i { background: var(--refus); }
 .verdict p { font-size: 0.9rem; margin: 0.25rem 0; }
+
+/* Barre des feuilles de calcul (projets de la suite) : alignee sur la page. */
+.feuilles {
+  margin-top: 0.8rem;
+}
+.feuilles:empty {
+  display: none;
+}
