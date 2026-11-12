@@ -21,6 +21,7 @@ import {
   telecharger,
   type BarreFeuilles,
   type Json,
+  avertissement2eGeneration,
 } from 'aedificium-ui';
 import {
   lireSaisie,
@@ -198,6 +199,11 @@ function montrerErreur(message: string | null): void {
 function ajusterAffichage(): void {
   for (const b of boutons('[data-generation]')) {
     b.setAttribute('aria-pressed', String(b.dataset.generation === saisie.generation));
+  }
+  const bandeau = document.querySelector<HTMLElement>('[data-role="bandeau-2e-gen"]');
+  if (bandeau !== null) {
+    bandeau.hidden = saisie.generation !== '2e';
+    bandeau.textContent = avertissement2eGeneration();
   }
   for (const b of boutons('[data-cercle]')) {
     b.setAttribute('aria-pressed', String(b.dataset.cercle === saisie.modeCercle));

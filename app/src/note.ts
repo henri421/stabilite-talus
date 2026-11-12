@@ -6,7 +6,7 @@
  * indicatif, n'y figure pas. Pas de verdict global : la note dit la verification determinante.
  */
 
-import { type ElementNote, type LigneResultat, type NoteDeCalcul, type VerificationNote, nombreAffiche } from 'aedificium-ui';
+import { avertissement2eGeneration, type ElementNote, type LigneResultat, type NoteDeCalcul, type VerificationNote, nombreAffiche } from 'aedificium-ui';
 import type { Calcul, Resultat } from './form';
 import { coupe, vueGouvernante } from './dessin';
 import { phrase, ponctuer, textes } from './textes';
@@ -127,6 +127,6 @@ export function noteDuCalcul(
       ],
     },
     verifications: verificationsDe(r),
-    avertissements: r.alertes.map((a) => phrase(a)),
+    avertissements: [...(r.generation === '2e' ? [avertissement2eGeneration()] : []), ...r.alertes.map((a) => phrase(a))],
   };
 }
