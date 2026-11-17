@@ -8,6 +8,7 @@
 
 import { lireNombre } from 'aedificium-ui';
 import { combinaisonsStabilite1g, combinaisonsStabilite2g, profil1g, profil2g, profilAnb2022 } from 'sol-ec7';
+import { profilLu1g } from './annexe';
 import type { Approche, ClasseConsequences, CombinaisonStabilite, Risque } from 'sol-ec7';
 import { verifierTalus, type DonneesTalus, type ResultatTalus } from '../../src/talus';
 import { textes } from './textes';
@@ -42,7 +43,7 @@ export interface BandeSaisie {
 /** Une seule saisie pour les deux generations : tout est du texte, sauf les choix et les listes. */
 export interface Saisie {
   generation: Generation;
-  profilNormatif: 'recommande' | 'anb2022';
+  profilNormatif: 'recommande' | 'anb2022' | 'lu';
   risque: Risque;
   approche1: Approche;
   consequences: ClasseConsequences;
@@ -184,6 +185,7 @@ export function lireSaisie(s: Saisie): Lecture {
     const donnees: DonneesTalus = {
       generation: s.generation,
       profilNormatif: s.profilNormatif,
+      ...(s.profilNormatif === 'lu' ? { profil1g: profilLu1g() } : {}),
       risque: s.risque,
       approche,
       cc: s.consequences,
@@ -210,7 +212,7 @@ export function verifier(calcul: Calcul): Resultat {
   const coefficients =
     d.generation === '2e'
       ? combinaisonsStabilite2g(d.cc, profil2g())
-      : combinaisonsStabilite1g(d.approche, d.profilNormatif === 'anb2022' ? profilAnb2022(d.risque) : profil1g());
+      : combinaisonsStabilite1g(d.approche, d.profil1g ?? (d.profilNormatif === 'anb2022' ? profilAnb2022(d.risque) : profil1g()));
   return { ...verifierTalus(d), generation: d.generation, coefficients };
 }
 
@@ -330,7 +332,7 @@ export function relire(contenu: string): Saisie {
 
   return {
     generation: choixOu(brut.generation, ['1re', '2e'] as const, d.generation),
-    profilNormatif: choixOu(brut.profilNormatif, ['recommande', 'anb2022'] as const, d.profilNormatif),
+    profilNormatif: choixOu(brut.profilNormatif, ['recommande', 'anb2022', 'lu'] as const, d.profilNormatif),
     risque: choixOu(brut.risque, ['faible', 'normal', 'eleve'] as const, d.risque),
     approche1: choixOu(brut.approche1, ['DA1', 'DA2', 'DA3'] as const, d.approche1),
     consequences: choixOu(brut.consequences, ['CC1', 'CC2', 'CC3'] as const, d.consequences),

@@ -6,7 +6,7 @@
  * indicatif, n'y figure pas. Pas de verdict global : la note dit la verification determinante.
  */
 
-import { avertissement2eGeneration, type ElementNote, type LigneResultat, type NoteDeCalcul, type VerificationNote, nombreAffiche } from 'aedificium-ui';
+import { avertissement2eGeneration, avertissementAnnexeLu, type ElementNote, type LigneResultat, type NoteDeCalcul, type VerificationNote, nombreAffiche } from 'aedificium-ui';
 import type { Calcul, Resultat } from './form';
 import { coupe, vueGouvernante } from './dessin';
 import { phrase, ponctuer, textes } from './textes';
@@ -23,6 +23,7 @@ interface Coefficient {
 /** Normes affichees dans le cartouche (non traduites). */
 const NORME_1RE = 'EN 1997-1:2004';
 const NORME_1RE_ANB = 'EN 1997-1:2004, NBN EN 1997-1 ANB:2022';
+const NORME_1RE_LU = 'EN 1997-1:2004, ILNAS-EN 1997-1/AN-LU:2020';
 const NORMES_2E = 'EN 1997-1:2024, EN 1997-3:2025, EN 1990:2023';
 
 /** Symboles des coefficients rendus par le noyau ; une cle inconnue s'affiche telle quelle. */
@@ -53,6 +54,7 @@ function sectionDe(symbole: string): Section {
 
 function normeDe(calcul: Calcul, r: Resultat): string {
   if (r.generation === '2e') return NORMES_2E;
+  if (calcul.donnees.profilNormatif === 'lu') return NORME_1RE_LU;
   return calcul.donnees.profilNormatif === 'anb2022' ? NORME_1RE_ANB : NORME_1RE;
 }
 
@@ -127,6 +129,8 @@ export function noteDuCalcul(
       ],
     },
     verifications: verificationsDe(r),
-    avertissements: [...(r.generation === '2e' ? [avertissement2eGeneration()] : []), ...r.alertes.map((a) => phrase(a))],
+    avertissements: [
+      ...(r.generation === '2e' ? [avertissement2eGeneration()] : []),
+      ...(r.generation === '1re' && calcul.donnees.profilNormatif === 'lu' ? [avertissementAnnexeLu()].filter((a) => a !== '') : []), ...r.alertes.map((a) => phrase(a))],
   };
 }

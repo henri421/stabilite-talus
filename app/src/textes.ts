@@ -35,7 +35,7 @@ const FR = {
     profilNormatif: 'Profil normatif',
     generations: { '1re': '1re génération', '2e': '2e génération' },
     risques: { faible: 'faible', normal: 'normal', eleve: 'élevé' },
-    profils: { recommande: 'valeurs recommandées', anb2022: 'NBN EN 1997-1 ANB:2022' },
+    profils: { recommande: 'valeurs recommandées', anb2022: 'NBN EN 1997-1 ANB:2022', lu: 'Luxembourg (AN-LU:2020, à vérifier)' },
     /** Symboles de la colonne « symbole » des tableaux d'entrées, et des sections de la note. */
     symboles: {
       profil: 'profil',
@@ -197,7 +197,7 @@ const EN: Textes = {
     profilNormatif: 'Normative profile',
     generations: { '1re': '1st generation', '2e': '2nd generation' },
     risques: { faible: 'low', normal: 'normal', eleve: 'high' },
-    profils: { recommande: 'recommended values', anb2022: 'NBN EN 1997-1 ANB:2022' },
+    profils: { recommande: 'recommended values', anb2022: 'NBN EN 1997-1 ANB:2022', lu: 'Luxembourg (AN-LU:2020, to be checked)' },
     symboles: {
       profil: 'profile',
       couche: 'layer',

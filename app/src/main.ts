@@ -22,6 +22,7 @@ import {
   type BarreFeuilles,
   type Json,
   avertissement2eGeneration,
+  avertissementAnnexeLu,
 } from 'aedificium-ui';
 import {
   lireSaisie,
@@ -204,6 +205,11 @@ function ajusterAffichage(): void {
   if (bandeau !== null) {
     bandeau.hidden = saisie.generation !== '2e';
     bandeau.textContent = avertissement2eGeneration();
+  }
+  const bandeauLu = document.querySelector<HTMLElement>('[data-role="bandeau-annexe"]');
+  if (bandeauLu !== null) {
+    bandeauLu.textContent = avertissementAnnexeLu();
+    bandeauLu.hidden = saisie.generation !== '1re' || saisie.profilNormatif !== 'lu' || bandeauLu.textContent === '';
   }
   for (const b of boutons('[data-cercle]')) {
     b.setAttribute('aria-pressed', String(b.dataset.cercle === saisie.modeCercle));

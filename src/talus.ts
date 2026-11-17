@@ -18,6 +18,7 @@ import {
   profil2g,
   profilAnb2022,
   rechercherCercleCritique,
+  type Profil1g,
 } from 'sol-ec7';
 import type {
   Approche,
@@ -52,7 +53,9 @@ export interface CoucheSaisie {
 export interface DonneesTalus {
   generation: '1re' | '2e';
   /** 1re generation : profil de coefficients. */
-  profilNormatif: 'recommande' | 'anb2022';
+  profilNormatif: 'recommande' | 'anb2022' | 'lu';
+  /** Profil 1re generation fourni par l'app (annexe nationale, lot E) ; prime sur `profilNormatif`. */
+  profil1g?: Profil1g;
   risque: Risque;
   approche: Approche;
   /** 2e generation : classe de consequences. */
@@ -109,7 +112,7 @@ function choisirProfil(d: DonneesTalus): { profil: string; combinaisons: Combina
     return { profil: p.nom, combinaisons: combinaisonsStabilite2g(d.cc, p) };
   }
   // ANB 2022 : DA1 imposee, combinaisonsStabilite1g leve si l'approche saisie est autre.
-  const p = d.profilNormatif === 'anb2022' ? profilAnb2022(d.risque) : profil1g();
+  const p = d.profil1g ?? (d.profilNormatif === 'anb2022' ? profilAnb2022(d.risque) : profil1g());
   return { profil: p.nom, combinaisons: combinaisonsStabilite1g(d.approche, p) };
 }
 
