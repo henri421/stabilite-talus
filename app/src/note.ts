@@ -131,6 +131,6 @@ export function noteDuCalcul(
     verifications: verificationsDe(r),
     avertissements: [
       ...(r.generation === '2e' ? [avertissement2eGeneration()] : []),
-      ...(r.generation === '1re' && calcul.donnees.profilNormatif === 'lu' ? [avertissementAnnexeLu()].filter((a) => a !== '') : []), ...r.alertes.map((a) => phrase(a))],
+      ...(r.generation === '1re' && calcul.donnees.profilNormatif === 'lu' ? [avertissementAnnexeLu(false)].filter((a) => a !== '') : []), ...r.alertes.map((a) => phrase(a))],
   };
 }
